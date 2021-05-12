@@ -10,8 +10,11 @@ import (
 
 //ping
 func Chek(w http.ResponseWriter,r *http.Request){
-	name:=r.Form.Get("name")
-	if name==""{
+	var jinput struct{
+		Name string `json:"name"`
+	}
+	json.NewDecoder(r.Body).Decode(&jinput)
+	if jinput.Name==""{
 		w.Write([]byte("hey!! call me by my name"))
 
 	}else{
@@ -48,7 +51,7 @@ func Search(w http.ResponseWriter,r *http.Request){
 		return
 	}
 
-	ans,err:=http.Get("https://pokeapi.co/api/v2/pokemon/Name")
+	ans,err:=http.Get("https://pokeapi.co/api/v2/pokemon/jinput.Name")
 	if err !=nil{
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(resp{
@@ -60,7 +63,12 @@ func Search(w http.ResponseWriter,r *http.Request){
 	}
 	body,err := ioutil.ReadAll(ans.Body)
 	if err!=nil{
-		log.Fatal(err)
+		w.WriteHeader(http.StatusForbidden)
+		json.NewEncoder(w).Encode(resp{
+			Status: "error2",
+			Msg:	"API error2!!",
+		})
+		return
 	}
 
 
