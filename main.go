@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encodin/json"
+	"encoding/json"
 	"log"
 	"fmt"
 	"io/ioutil"
@@ -48,7 +48,7 @@ func Search(w http.ResponseWriter,r *http.Request){
 		return
 	}
 
-	resp,err:=http.Get("https://pokeapi.co/api/v2/pokemon/Name")
+	ans,err:=http.Get("https://pokeapi.co/api/v2/pokemon/Name")
 	if err !=nil{
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(resp{
@@ -58,12 +58,12 @@ func Search(w http.ResponseWriter,r *http.Request){
 		return
 
 	}
-	body,err := ioutil.ReadAll(resp.Body)
+	body,err := ioutil.ReadAll(ans.Body)
 	if err!=nil{
 		log.Fatal(err)
 	}
 
-	
+
 	sb:=string(body)
 	fmt.Fprintf(w,"%s",sb)
 
@@ -78,7 +78,10 @@ func main() {
 	router.HandleFunc("/ping",Chek)
 
 
-	http.ListenAndServe("0.0.0.0.8080",router)
+	err:=http.ListenAndServe("0.0.0.0:8080", router)
+	if err!=nil{
+		log.Fatal(err)
+	}
 
 	
 }
